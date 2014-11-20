@@ -3,7 +3,8 @@ warnings.simplefilter('always', UserWarning)
 
 import pandas as pd
 
-from .utils import check_duplicated_timestamps
+from .utils import (check_duplicated_timestamps,
+                    check_unsorted_timestamps)
 
 _msg_timestamp = """
 'timestamp' column is not available or not understood. Some operations 
@@ -34,19 +35,20 @@ class TimeSeries:
         except:
             raise ValueError('Only Pandas DataFrames are accepted')
         
-        if 'timestamp' in _cols:
-            if self.data.timestamp.dtype == "datetime64[ns]":
-                check_duplicated_timestamps(self.data)
-                self._has_timestamp = True
-        else:
-            warnings.warn(_msg_timestamp, UserWarning)
-        
         if 'wspd' in _cols:
             self._has_wspd = True
         else:
-            raise ValueError("""
-No 'wspd' column available. Most calculations can't be 
-performed.""")
+            raise ValueError("""No 'wspd' column available.""")
+        
+        if 'timestamp' in _cols:
+            if self.data.timestamp.dtype == "datetime64[ns]":
+                check_duplicated_timestamps(self.data)
+                check_unsorted_timestamps(self.data)
+                self._has_timestamp = True
+            else:
+                warnings.warn(_msg_timestamp, UserWarning)
+        else:
+            warnings.warn(_msg_timestamp, UserWarning)
 
         if 'wdir' in _cols:
             self._has_wdir = True

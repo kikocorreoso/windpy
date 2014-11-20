@@ -9,13 +9,9 @@ def check_duplicated_timestamps(data):
         raise Exception("""
 There are duplicated timestamps. This could lead to ambiguous results.
 Please, check your input.
-Duplicated values:
-        """ + res.__repr__())
+Duplicated values:""" + res.__repr__())
         
 def check_unsorted_timestamps(data):
     """Chack if the timestamps are not ordered"""
     if not any(data.sort('timestamp').timestamp == data.timestamp):
-        raise Exception("""
-The timestamps are not sorted. This could lead to ambiguous results.
-Please, check your input.
-        """)
+        raise Exception("The timestamps are not sorted. This could lead to ambiguous results. Please, check your input.")
