@@ -3,7 +3,8 @@ import warnings
 
 import pandas as pd
 import windpy as w
-from windpy.utils import check_duplicated_timestamps
+from windpy.utils import (check_duplicated_timestamps,
+                          check_unsorted_timestamps)
 from windpy.timeseries import _msg_timestamp, _msg_w
 
 #####################################
@@ -150,6 +151,15 @@ class TestUtilsPy(unittest.TestCase):
         df.timestamp = pd.date_range('20000101', '20000103')
         df.timestamp[2] = pd.datetime(2000, 1, 2)
         self.assertRaises(Exception, check_duplicated_timestamps, df)
+    
+    def test_check_unsorted_timestamps(self):
+        """test for duplicated timestamps and raises an Exception"""
+        df = df_base.copy()
+        df.columns = ['timestamp', 'wspd', 'wdir', 
+                      'wspd_min', 'wspd_max', 'wspd_std']
+        df.timestamp = pd.date_range('20000101', '20000103')
+        df.timestamp[2] = pd.datetime(1999, 12, 31)
+        self.assertRaises(Exception, check_unsorted_timestamps, df)
 
 if __name__ == '__main__':
     unittest.main()
