@@ -2,9 +2,11 @@ import warnings
 warnings.simplefilter('always', UserWarning)
 
 import pandas as pd
+import numpy as np
 
 from .utils import (check_duplicated_timestamps,
-                    check_unsorted_timestamps)
+                    check_unsorted_timestamps,
+                    get_frequency)
 
 _msg_timestamp = """
 'timestamp' column is not available or not understood. Some operations 
@@ -18,7 +20,7 @@ could not be performed and an Exception will be raised.
 
 class TimeSeries:
     def __init__(self, data, height = 10):
-        self.data = data
+        self.data = data            
         self._has_timestamp = False
         self._has_wspd = False
         self._has_wdir = False
@@ -45,6 +47,11 @@ class TimeSeries:
                 check_duplicated_timestamps(self.data)
                 check_unsorted_timestamps(self.data)
                 self._has_timestamp = True
+                self.freq = get_frequency(self.data)
+                self.date_start = self.data.timestamp.min()
+                self.date_end = self.data.timestamp.max()
+                rango = pd.Timedelta(self.date_end - self.date_start)
+                self.possible_values = rango / self.freq + 1
             else:
                 warnings.warn(_msg_timestamp, UserWarning)
         else:
@@ -69,4 +76,10 @@ class TimeSeries:
             self._has_wspd_std = True
         else:
             warnings.warn(_msg_w.format('wspd_std'), UserWarning)
+        
+    def mean_wspd(self):
+        return self.data.wspd.mean()
+    
+    def weibull_params(self, method = "MLE", date_start = None, date_end = None):
+        pass
     

@@ -15,3 +15,8 @@ def check_unsorted_timestamps(data):
     """Chack if the timestamps are not ordered"""
     if not any(data.sort('timestamp').timestamp == data.timestamp):
         raise Exception("The timestamps are not sorted. This could lead to ambiguous results. Please, check your input.")
+        
+def get_frequency(data):
+	"""Get the time frequency of the dataset."""
+	return data.timestamp.diff().min()
+	
